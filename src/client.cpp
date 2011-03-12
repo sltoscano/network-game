@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <string.h>
 
-int main()
+int main(int argc, char* argv[])
 {
 	int sock;
 	int bytes_recieved;
@@ -21,8 +21,14 @@ int main()
 
 	hostent* host;
 	sockaddr_in server_addr;
+	
+	if (argc < 2)
+	{
+		printf("usage: %s <ip address>", argv[0]);
+		return 1;
+	}
 
-	host = gethostbyname("127.0.0.1");
+	host = gethostbyname(argv[1]);
 
 	if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
