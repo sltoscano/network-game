@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "network-game", "network-game.vcxproj", "{D27BC477-F7DF-4D9F-8CC3-0196D6184F0B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C8DE118B-B4FB-41DB-857C-DAF2E8877B34} = {C8DE118B-B4FB-41DB-857C-DAF2E8877B34}
+		{9C5603B0-0057-4800-86E0-2EE9CC93FAD1} = {9C5603B0-0057-4800-86E0-2EE9CC93FAD1}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Box2D", "Box2D\Box2D.vcxproj", "{C8DE118B-B4FB-41DB-857C-DAF2E8877B34}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freeglut", "freeglut\freeglut.vcxproj", "{9C5603B0-0057-4800-86E0-2EE9CC93FAD1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D27BC477-F7DF-4D9F-8CC3-0196D6184F0B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D27BC477-F7DF-4D9F-8CC3-0196D6184F0B}.Debug|Win32.Build.0 = Debug|Win32
+		{D27BC477-F7DF-4D9F-8CC3-0196D6184F0B}.Release|Win32.ActiveCfg = Release|Win32
+		{D27BC477-F7DF-4D9F-8CC3-0196D6184F0B}.Release|Win32.Build.0 = Release|Win32
+		{C8DE118B-B4FB-41DB-857C-DAF2E8877B34}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8DE118B-B4FB-41DB-857C-DAF2E8877B34}.Debug|Win32.Build.0 = Debug|Win32
+		{C8DE118B-B4FB-41DB-857C-DAF2E8877B34}.Release|Win32.ActiveCfg = Release|Win32
+		{C8DE118B-B4FB-41DB-857C-DAF2E8877B34}.Release|Win32.Build.0 = Release|Win32
+		{9C5603B0-0057-4800-86E0-2EE9CC93FAD1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9C5603B0-0057-4800-86E0-2EE9CC93FAD1}.Debug|Win32.Build.0 = Debug|Win32
+		{9C5603B0-0057-4800-86E0-2EE9CC93FAD1}.Release|Win32.ActiveCfg = Release|Win32
+		{9C5603B0-0057-4800-86E0-2EE9CC93FAD1}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
