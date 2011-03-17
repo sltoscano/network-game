@@ -11,7 +11,7 @@ namespace
 	int32 height = 600;
 	int32 framePeriod = 16;
 	float32 viewZoom = 1.0f;
-	b2Vec2 viewCenter(0.0f, 20.0f);
+	b2Vec2 viewCenter(0.0f, 0.0f);
 	int32 mainWindow;
 	float settingsHz = 60.0;
 	Body* body;
@@ -25,10 +25,8 @@ void resize(int32 w, int32 h)
 
 	glViewport(0, 0, w, h);
 
-	// Box2D has a constant world height
-	const float b2height = 46.0f;
-	const float b2width = b2height * (float(h) / float(w));
-	settings.viewport.Set(b2width, b2height);
+	settings.windowWidth = w;
+	settings.windowHeight = w;
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -41,7 +39,8 @@ void resize(int32 w, int32 h)
 	b2Vec2 upper = viewCenter + extents;
 
 	/// L/R/B/T
-	gluOrtho2D(lower.x, upper.x, lower.y, upper.y);
+	//gluOrtho2D(lower.x, upper.x, lower.y, upper.y);
+	gluOrtho2D(0, upper.x, 0, upper.y);
 }
 
 /// This is used to control the frame rate (60Hz).

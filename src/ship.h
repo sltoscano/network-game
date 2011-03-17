@@ -136,7 +136,7 @@ public:
 		bd.type = b2_dynamicBody;
 
 		//float32 x = RandomFloat(-2.0f, 2.0f);
-		bd.position.Set(0.0f, 0.0f);
+		bd.position.Set(1.0f, 1.0f);
 		bd.angle = 0;
 
 		m_bodies[m_bodyIndex] = m_world->CreateBody(&bd);
@@ -253,6 +253,8 @@ public:
 			//const b2Fixture* fix = m_bodies[0]->GetFixtureList();
 			//const b2AABB aabb = fix->GetAABB();
 			//b2Vec2 v = m_bodies[0]->GetWorldCenter();
+
+			/*
 			b2Vec2 pos(m_bodies[0]->GetPosition());
 			float32 angle = m_bodies[0]->GetAngle();
 			if (pos.x > settings->viewport.x)
@@ -275,6 +277,7 @@ public:
 				b2Vec2 newPos(pos.x, settings->viewport.y);
 				m_bodies[0]->SetTransform(newPos, angle);
 			}
+			*/
 		}
 		/*
 		int32 lastDecelerate = glutGet(GLUT_ELAPSED_TIME) - m_lastDecelerate;

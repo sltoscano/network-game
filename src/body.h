@@ -16,6 +16,13 @@ typedef Body* EntityCreateFcn();
 
 #define	RAND_LIMIT	32767
 
+//Pixel to metres ratio. Box2D uses metres as the unit for measurement.
+//This ratio defines how many pixels correspond to 1 Box2D "metre"
+//Box2D is optimized for objects of 1x1 metre therefore it makes sense
+//to define the ratio so that your most common object type is 1x1 metre.
+#define PTM_RATIO 1
+
+
 /// Random number in range [-1,1]
 inline float32 RandomFloat()
 {
@@ -54,7 +61,9 @@ struct Settings
 		enableWarmStarting(1),
 		enableContinuous(1),
 		pause(0),
-		singleStep(0)
+		singleStep(0),
+		windowWidth(0),
+		windowHeight(0)
 		{}
 
 	float32 hz;
@@ -74,7 +83,8 @@ struct Settings
 	int32 enableContinuous;
 	int32 pause;
 	int32 singleStep;
-	b2Vec2 viewport;
+	int32 windowWidth;
+	int32 windowHeight;
 };
 
 struct Entity
