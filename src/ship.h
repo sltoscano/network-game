@@ -7,7 +7,21 @@
 #include <freeglut/GL/freeglut.h>
 
 
-const int32 k_maxBodies = 256;
+//const int32 k_maxBodies = 256;
+const int32 k_maxBodies = 4096;
+
+b2Color colors[] = {
+	b2Color( 255.0f, 255.0f, 153.0f ),
+	b2Color( 255.0f, 204.0f, 153.0f ),
+	b2Color(204.0f, 255.0f, 153.0f),
+	b2Color(204.0f, 102.0f, 153.0f),
+	b2Color(153.0f, 255.0f, 153.0f),
+	b2Color(153.0f, 51.0f, 153.0f),
+	b2Color(102.0f, 255.0f, 153.0f),
+	b2Color(102.0f, 153.0f, 153.0f),
+	b2Color(51.0f, 0.0f, 153.0f),
+	b2Color(0.0f, 102.0f, 51.0f)
+};
 
 /// This callback is called by b2World::QueryAABB. We find all the fixtures
 /// that overlap an AABB. Of those, we use b2TestOverlap to determine which fixtures
@@ -28,7 +42,11 @@ public:
 
 	void DrawFixture(b2Fixture* fixture)
 	{
-		b2Color color(0.95f, 0.95f, 0.6f);
+		int32* id = (int32*)fixture->GetUserData();
+		b2Color color = (id == NULL) ?
+			b2Color(0.95f, 0.95f, 0.6f) :
+			colors[*id % (sizeof(colors)/sizeof(b2Color))];
+
 		const b2Transform& xf = fixture->GetBody()->GetTransform();
 
 		switch (fixture->GetType())
@@ -117,11 +135,17 @@ public:
 			m_polygons[0].Set(vertices, 3);
 		}
 
+		m_nextID = 0;
 		m_thrust = 0;
 		m_bodyIndex = 0;
 		//m_lastSpeedChange = 0;
 		//m_lastDecelerate = 0;
 		memset(m_bodies, 0, sizeof(m_bodies));
+	}
+
+	~Ship()
+	{
+		DestroyBody();
 	}
 
 	void Create(int32 index)
@@ -147,6 +171,7 @@ public:
 			fd.shape = m_polygons + index;
 			fd.density = 1.0f;
 			fd.friction = 0.3f;
+			fd.userData = new int32(m_nextID++);
 			m_bodies[m_bodyIndex]->CreateFixture(&fd);
 		}
 
@@ -159,9 +184,11 @@ public:
 		{
 			if (m_bodies[i] != NULL)
 			{
+				b2Fixture* fix = m_bodies[i]->GetFixtureList();
+				int32* userData = (int32*)fix->GetUserData();
+				delete userData;
 				m_world->DestroyBody(m_bodies[i]);
 				m_bodies[i] = NULL;
-				return;
 			}
 		}
 	}
@@ -301,6 +328,7 @@ public:
 	float m_thrust;
 	//int32 m_lastSpeedChange;
 	//int32 m_lastDecelerate;
+	int32 m_nextID;
 	int32 m_bodyIndex;
 	b2Body* m_bodies[k_maxBodies];
 	b2PolygonShape m_polygons[4];
