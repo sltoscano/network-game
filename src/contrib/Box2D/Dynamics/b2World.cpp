@@ -986,25 +986,30 @@ void b2World::DrawDebugData()
 			const b2Transform& xf = b->GetTransform();
 			for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
 			{
+				const b2Color* pColor = (b2Color*)f->GetUserData();
+				const b2Color& color = (pColor == NULL) ?
+					b2Color(0.5f, 0.5f, 0.3f) :
+					*pColor;
+
 				if (b->IsActive() == false)
 				{
-					DrawShape(f, xf, b2Color(0.5f, 0.5f, 0.3f));
+					DrawShape(f, xf, color);
 				}
 				else if (b->GetType() == b2_staticBody)
 				{
-					DrawShape(f, xf, b2Color(0.5f, 0.9f, 0.5f));
+					DrawShape(f, xf, color);
 				}
 				else if (b->GetType() == b2_kinematicBody)
 				{
-					DrawShape(f, xf, b2Color(0.5f, 0.5f, 0.9f));
+					DrawShape(f, xf, color);
 				}
 				else if (b->IsAwake() == false)
 				{
-					DrawShape(f, xf, b2Color(0.6f, 0.6f, 0.6f));
+					DrawShape(f, xf, color);
 				}
 				else
 				{
-					DrawShape(f, xf, b2Color(0.9f, 0.7f, 0.7f));
+					DrawShape(f, xf, color);
 				}
 			}
 		}

@@ -58,11 +58,13 @@ void simulation_loop()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	body->SetTextLine(30);
-	settings.hz = settingsHz;
-	body->Step(&settings);
-
-	body->DrawTitle(5, 15, g_entities[0].name);
+	if (body)
+	{
+		body->SetTextLine(30);
+		settings.hz = settingsHz;
+		body->Step(&settings);
+		body->DrawTitle(5, 15, g_entities[0].name);
+	}
 
 	glutSwapBuffers();
 }
@@ -76,7 +78,10 @@ void keyboard(unsigned char key, int x, int y)
 	{
 	case 27:
 		if (body)
+		{
 			delete body;
+			body = NULL;
+		}
 		glutLeaveMainLoop();
 		break;
 

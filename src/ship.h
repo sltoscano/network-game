@@ -11,16 +11,16 @@
 const int32 k_maxBodies = 4096;
 
 b2Color colors[] = {
-	b2Color( 255.0f, 255.0f, 153.0f ),
-	b2Color( 255.0f, 204.0f, 153.0f ),
-	b2Color(204.0f, 255.0f, 153.0f),
-	b2Color(204.0f, 102.0f, 153.0f),
-	b2Color(153.0f, 255.0f, 153.0f),
-	b2Color(153.0f, 51.0f, 153.0f),
-	b2Color(102.0f, 255.0f, 153.0f),
-	b2Color(102.0f, 153.0f, 153.0f),
-	b2Color(51.0f, 0.0f, 153.0f),
-	b2Color(0.0f, 102.0f, 51.0f)
+	b2Color(1.00f, 1.00f, 0.60f),
+	b2Color(1.00f, 0.80f, 0.60f),
+	b2Color(0.80f, 1.00f, 0.60f),
+	b2Color(0.80f, 0.40f, 0.60f),
+	b2Color(0.60f, 1.00f, 0.60f),
+	b2Color(0.60f, 0.20f, 0.60f),
+	b2Color(0.40f, 1.00f, 0.60f),
+	b2Color(0.40f, 0.60f, 0.60f),
+	b2Color(0.20f, 0.00f, 0.60f),
+	b2Color(0.00f, 0.40f, 0.20f)
 };
 
 /// This callback is called by b2World::QueryAABB. We find all the fixtures
@@ -42,10 +42,10 @@ public:
 
 	void DrawFixture(b2Fixture* fixture)
 	{
-		int32* id = (int32*)fixture->GetUserData();
-		b2Color color = (id == NULL) ?
+		const b2Color* pColor = (b2Color*)fixture->GetUserData();
+		const b2Color& color = (pColor == NULL) ?
 			b2Color(0.95f, 0.95f, 0.6f) :
-			colors[*id % (sizeof(colors)/sizeof(b2Color))];
+			*pColor;
 
 		const b2Transform& xf = fixture->GetBody()->GetTransform();
 
@@ -171,8 +171,13 @@ public:
 			fd.shape = m_polygons + index;
 			fd.density = 1.0f;
 			fd.friction = 0.3f;
-			fd.userData = new int32(m_nextID++);
 			m_bodies[m_bodyIndex]->CreateFixture(&fd);
+		}
+
+		int pos = m_nextID++ % (sizeof(colors)/sizeof(b2Color));
+		for (b2Fixture* f = m_bodies[m_bodyIndex]->GetFixtureList(); f; f = f->GetNext())
+		{
+			f->SetUserData(new b2Color(colors[pos]));
 		}
 
 		m_bodyIndex = (m_bodyIndex + 1) % k_maxBodies;
@@ -184,9 +189,11 @@ public:
 		{
 			if (m_bodies[i] != NULL)
 			{
-				b2Fixture* fix = m_bodies[i]->GetFixtureList();
-				int32* userData = (int32*)fix->GetUserData();
-				delete userData;
+				for (b2Fixture* f = m_bodies[i]->GetFixtureList(); f; f = f->GetNext())
+				{
+					b2Color* pColor = (b2Color*) f->GetUserData();
+					delete pColor;
+				}
 				m_world->DestroyBody(m_bodies[i]);
 				m_bodies[i] = NULL;
 			}
@@ -197,7 +204,7 @@ public:
 		return b2Vec2(cosf(r)*m,sinf(r)*m);
 	}
 
-	void Keyboard(unsigned char key)
+	void Keyboard(int key)
 	{
 		switch (key)
 		{

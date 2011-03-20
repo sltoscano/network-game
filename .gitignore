@@ -1,2 +1,12 @@
 linux/client
 linux/server
+vs2010/Box2D/Box2D.vcxproj.user
+vs2010/Box2D/Debug/
+vs2010/Debug/
+vs2010/freeglut/Debug/
+vs2010/freeglut/freeglut.vcxproj.user
+vs2010/ipch/
+vs2010/network-game.opensdf
+vs2010/network-game.sdf
+vs2010/network-game.suo
+vs2010/network-game.vcxproj.user

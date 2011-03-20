@@ -127,7 +127,7 @@ public:
 	void SetTextLine(int32 line) { m_textLine = line; }
 	void DrawTitle(int x, int y, const char *string);
 	virtual void Step(Settings* settings);
-	virtual void Keyboard(unsigned char key) { REF(key); }
+	virtual void Keyboard(int key) { REF(key); }
 	//void ShiftMouseDown(const b2Vec2& p);
 	//virtual void MouseDown(const b2Vec2& p);
 	//virtual void MouseUp(const b2Vec2& p);
