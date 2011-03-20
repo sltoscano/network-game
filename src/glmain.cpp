@@ -1,6 +1,5 @@
 
 #include "common.h"
-#include "render.h"
 #include "body.h"
 #include <freeglut/GL/freeglut.h>
 
@@ -18,6 +17,32 @@ namespace
 	Settings settings;
 }
 
+b2Vec2 ConvertScreenToWorld(int32 x, int32 y)
+{
+	int tw = width;
+	int th = height;
+
+	float32 u = x / float32(tw);
+	float32 v = (th - y) / float32(th);
+
+	float32 ratio = float32(tw) / float32(th);
+	b2Vec2 extents(ratio * 25.0f, 25.0f);
+
+	float32 viewZoom = 1.0f;
+
+	extents *= viewZoom;
+
+	b2Vec2 viewCenter(0.0f, 0.0f);
+
+	b2Vec2 lower = viewCenter - extents;
+	b2Vec2 upper = viewCenter + extents;
+
+	b2Vec2 p;
+	p.x = b2Abs( (1.0f - u) * lower.x + u * upper.x );
+	p.y = b2Abs( (1.0f - v) * lower.y + v * upper.y );
+	return p;
+}
+
 void resize(int32 w, int32 h)
 {
 	width = w;
@@ -25,8 +50,7 @@ void resize(int32 w, int32 h)
 
 	glViewport(0, 0, w, h);
 
-	settings.windowWidth = w;
-	settings.windowHeight = w;
+	settings.worldExtents = ConvertScreenToWorld(w, h);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -39,7 +63,6 @@ void resize(int32 w, int32 h)
 	b2Vec2 upper = viewCenter + extents;
 
 	/// L/R/B/T
-	//gluOrtho2D(lower.x, upper.x, lower.y, upper.y);
 	gluOrtho2D(0, upper.x, 0, upper.y);
 }
 
@@ -61,8 +84,7 @@ void simulation_loop()
 	if (body)
 	{
 		body->SetTextLine(30);
-		settings.hz = settingsHz;
-		body->Step(&settings);
+		body->Step();
 		body->DrawTitle(5, 15, g_entities[0].name);
 	}
 
@@ -77,12 +99,7 @@ void keyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case 27:
-		if (body)
-		{
-			delete body;
-			body = NULL;
-		}
-		glutLeaveMainLoop();
+		exit(0);
 		break;
 
 	// Press 'z' to zoom out.
@@ -105,7 +122,6 @@ void keyboard(unsigned char key, int x, int y)
 	}
 }
 
-
 void keyboard_special(int key, int x, int y)
 {
 	REF(x);
@@ -113,7 +129,8 @@ void keyboard_special(int key, int x, int y)
 
 	switch (key)
 	{
-		default:
+	case 0:
+	default:
 		if (body)
 		{
 			body->Keyboard(key);
@@ -143,6 +160,18 @@ void mouse_wheel(int wheel, int direction, int x, int y)
 	REF(y);
 }
 
+void glexit()
+{
+	if (body)
+	{
+		delete body;
+		body = NULL;
+	}
+	glutLeaveMainLoop();
+	glutDestroyWindow(mainWindow);
+	glutExit();
+}
+
 int glmain(int argc, char *argv[])
 {
 	glutInit(&argc, argv);
@@ -150,7 +179,8 @@ int glmain(int argc, char *argv[])
 	glutInitWindowSize(width, height);
 
 	char title[48];
-	sprintf(title, "network-game (Box2D Version %d.%d.%d)", b2_version.major, b2_version.minor, b2_version.revision);
+	sprintf(title, "network-game (Box2D Version %d.%d.%d)", 
+		b2_version.major, b2_version.minor, b2_version.revision);
 	mainWindow = glutCreateWindow(title);
 
 	glutDisplayFunc(simulation_loop);
@@ -166,10 +196,12 @@ int glmain(int argc, char *argv[])
 	/// Use a timer to control the frame rate.
 	glutTimerFunc(framePeriod, timer, 0);
 
-	body = g_entities[0].createFcn();
+	settings.hz = settingsHz;
+	settings.worldExtents = ConvertScreenToWorld(width, height);
+	body = g_entities[0].createFcn(&settings);
+
+	atexit(glexit);
 	glutMainLoop();
 
-	//glutDestroyWindow(mainWindow);
-	//glutExit();
 	return 0;
 }

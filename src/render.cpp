@@ -16,6 +16,7 @@
 * 3. This notice may not be removed or altered from any source distribution.
 */
 
+#include "common.h"
 #include "Render.h"
 
 #include "freeglut/GL/glut.h"

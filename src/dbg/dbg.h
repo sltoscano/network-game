@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef DEBUG_H
+#define DEBUG_H
 
 #ifdef _DEBUG
 #define dbgprint(x, ...) wprintf(x, __VA_ARGS__)
@@ -18,4 +20,6 @@
 #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DEBUG_NEW
 #endif
+#endif
+
 #endif

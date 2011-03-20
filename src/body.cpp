@@ -1,7 +1,6 @@
 
 #include "body.h"
 
-#include "freeglut/GL/freeglut_std.h"
 #include <cstdio>
 
 
@@ -17,39 +16,15 @@ void DestructionListener::SayGoodbye(b2Joint* joint)
 	}
 }
 
-b2Vec2 ConvertScreenToWorld(int32 x, int32 y)
+Body::Body(Settings* settings)
 {
-	int tw = glutGet(GLUT_WINDOW_WIDTH);
-	int th = glutGet(GLUT_WINDOW_HEIGHT);
+	m_settings = settings;
 
-	float32 u = x / float32(tw);
-	float32 v = (th - y) / float32(th);
-
-	float32 ratio = float32(tw) / float32(th);
-	b2Vec2 extents(ratio * 25.0f, 25.0f);
-
-	float32 viewZoom = 1.0f;
-
-	extents *= viewZoom;
-
-	b2Vec2 viewCenter(0.0f, 0.0f);
-
-	b2Vec2 lower = viewCenter - extents;
-	b2Vec2 upper = viewCenter + extents;
-
-	b2Vec2 p;
-	p.x = (1.0f - u) * lower.x + u * upper.x;
-	p.y = (1.0f - v) * lower.y + v * upper.y;
-	return p;
-}
-
-Body::Body()
-{
 	b2Vec2 gravity;
-	//gravity.Set(0.0f, -10.0f);
 	gravity.Set(0.0f, 0.0f);
 	bool doSleep = true;
 	m_world = new b2World(gravity, doSleep);
+
 	m_textLine = 30;
 	m_mouseJoint = NULL;
 	m_pointCount = 0;
@@ -68,24 +43,23 @@ Body::Body()
 	// Define the ground box shape.
 	b2PolygonShape groundBox;
 
-	b2Vec2 vec = ConvertScreenToWorld(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
-	float32 w = b2Abs(vec.x);
-	float32 h = b2Abs(vec.y);
+	float32 x = m_settings->worldExtents.x;
+	float32 y = m_settings->worldExtents.y;
 
 	// bottom
-	groundBox.SetAsEdge(b2Vec2(0,0), b2Vec2(w,0));
+	groundBox.SetAsEdge(b2Vec2(0,0), b2Vec2(x,0));
 	m_groundBody->CreateFixture(&groundBox,0);
 
 	// top
-	groundBox.SetAsEdge(b2Vec2(0,h), b2Vec2(w,h));
+	groundBox.SetAsEdge(b2Vec2(0,y), b2Vec2(x,y));
 	m_groundBody->CreateFixture(&groundBox,0);
 
 	// left
-	groundBox.SetAsEdge(b2Vec2(0,h), b2Vec2(0,0));
+	groundBox.SetAsEdge(b2Vec2(0,y), b2Vec2(0,0));
 	m_groundBody->CreateFixture(&groundBox,0);
 
 	// right
-	groundBox.SetAsEdge(b2Vec2(w,h), b2Vec2(w,0));
+	groundBox.SetAsEdge(b2Vec2(x,y), b2Vec2(x,0));
 	m_groundBody->CreateFixture(&groundBox,0);
 }
 
@@ -163,15 +137,15 @@ public:
 	b2Fixture* m_fixture;
 };
 
-void Body::Step(Settings* settings)
+void Body::Step()
 {
-	float32 timeStep = settings->hz > 0.0f ? 1.0f / settings->hz : float32(0.0f);
+	float32 timeStep = m_settings->hz > 0.0f ? 1.0f / m_settings->hz : float32(0.0f);
 
-	if (settings->pause)
+	if (m_settings->pause)
 	{
-		if (settings->singleStep)
+		if (m_settings->singleStep)
 		{
-			settings->singleStep = 0;
+			m_settings->singleStep = 0;
 		}
 		else
 		{
@@ -183,19 +157,19 @@ void Body::Step(Settings* settings)
 	}
 
 	uint32 flags = 0;
-	flags += settings->drawShapes			* b2DebugDraw::e_shapeBit;
-	flags += settings->drawJoints			* b2DebugDraw::e_jointBit;
-	flags += settings->drawAABBs			* b2DebugDraw::e_aabbBit;
-	flags += settings->drawPairs			* b2DebugDraw::e_pairBit;
-	flags += settings->drawCOMs				* b2DebugDraw::e_centerOfMassBit;
+	flags += m_settings->drawShapes			* b2DebugDraw::e_shapeBit;
+	flags += m_settings->drawJoints			* b2DebugDraw::e_jointBit;
+	flags += m_settings->drawAABBs			* b2DebugDraw::e_aabbBit;
+	flags += m_settings->drawPairs			* b2DebugDraw::e_pairBit;
+	flags += m_settings->drawCOMs				* b2DebugDraw::e_centerOfMassBit;
 	m_debugDraw.SetFlags(flags);
 
-	m_world->SetWarmStarting(settings->enableWarmStarting > 0);
-	m_world->SetContinuousPhysics(settings->enableContinuous > 0);
+	m_world->SetWarmStarting(m_settings->enableWarmStarting > 0);
+	m_world->SetContinuousPhysics(m_settings->enableContinuous > 0);
 
 	m_pointCount = 0;
 
-	m_world->Step(timeStep, settings->velocityIterations, settings->positionIterations);
+	m_world->Step(timeStep, m_settings->velocityIterations, m_settings->positionIterations);
 
 	m_world->DrawDebugData();
 
@@ -204,7 +178,7 @@ void Body::Step(Settings* settings)
 		++m_stepCount;
 	}
 
-	if (settings->drawStats)
+	if (m_settings->drawStats)
 	{
 		m_debugDraw.DrawString(5, m_textLine, "bodies/contacts/joints/proxies = %d/%d/%d",
 			m_world->GetBodyCount(), m_world->GetContactCount(), m_world->GetJointCount(), m_world->GetProxyCount());

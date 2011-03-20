@@ -4,11 +4,12 @@
 
 #include "body.h"
 
-#include <freeglut/GL/freeglut.h>
+#define  GLUT_KEY_LEFT                      0x0064
+#define  GLUT_KEY_UP                        0x0065
+#define  GLUT_KEY_RIGHT                     0x0066
+#define  GLUT_KEY_DOWN                      0x0067
 
-
-//const int32 k_maxBodies = 256;
-const int32 k_maxBodies = 4096;
+const int32 k_maxBodies = 256;
 
 b2Color colors[] = {
 	b2Color(1.00f, 1.00f, 0.60f),
@@ -112,22 +113,12 @@ public:
 class Ship : public Body
 {
 public:
-	Ship()
+	Ship(Settings* settings) : Body(settings)
 	{
 		// Shape of ship
 		{
 			b2Vec2 vertices[3];
-			/*
-			vertices[0].Set(-0.75f, -0.5f);
-			vertices[1].Set(1.0f, 0.0f);
-			vertices[2].Set(-0.75f, 0.5f);
-			*/
-			/*
-			//world center = 0,0
-			vertices[0].Set(-0.3125f, -0.4f);
-			vertices[1].Set(0.625f, 0.0f);
-			vertices[2].Set(-0.3125f, 0.4f);
-			*/
+
 			vertices[0].Set(-0.75f, -0.4f);
 			vertices[1].Set(0.5f, 0.0f);
 			vertices[2].Set(-0.75f, 0.4f);
@@ -138,8 +129,6 @@ public:
 		m_nextID = 0;
 		m_thrust = 0;
 		m_bodyIndex = 0;
-		//m_lastSpeedChange = 0;
-		//m_lastDecelerate = 0;
 		memset(m_bodies, 0, sizeof(m_bodies));
 	}
 
@@ -159,7 +148,6 @@ public:
 		b2BodyDef bd;
 		bd.type = b2_dynamicBody;
 
-		//float32 x = RandomFloat(-2.0f, 2.0f);
 		bd.position.Set(1.0f, 1.0f);
 		bd.angle = 0;
 
@@ -221,8 +209,6 @@ public:
 				m_bodies[0]->SetLinearVelocity(vec);
 
 				m_bodies[0]->SetAngularVelocity(0.0f);
-
-				//m_lastSpeedChange = glutGet(GLUT_ELAPSED_TIME);
 			}
 			break;
 
@@ -235,38 +221,26 @@ public:
 				m_bodies[0]->SetLinearVelocity(vec);
 
 				m_bodies[0]->SetAngularVelocity(0.0f);
-
-				//m_lastSpeedChange = glutGet(GLUT_ELAPSED_TIME);
 			}
 			break;
 		case GLUT_KEY_LEFT:
 			if (m_bodies[0])
 			{
-				/*
-				m_bodies[0]->SetTransform(m_bodies[0]->GetPosition(), 
-					m_bodies[0]->GetAngle() + 0.1f);
-				m_bodies[0]->SetAngularVelocity(0.0f);
-				*/
 				m_bodies[0]->SetAngularVelocity(1.5f);
 			}
 			break;
 		case GLUT_KEY_RIGHT:
 			if (m_bodies[0])
 			{
-				/*
-				m_bodies[0]->SetTransform(m_bodies[0]->GetPosition(), 
-					m_bodies[0]->GetAngle() - 0.1f);
-				m_bodies[0]->SetAngularVelocity(0.0f);
-				*/
 				m_bodies[0]->SetAngularVelocity(-1.5f);
 			}
 			break;
 		}
 	}
 
-	void Step(Settings* settings)
+	void Step()
 	{
-		Body::Step(settings);
+		Body::Step();
 
 		PolyShapesCallback callback;
 		callback.m_circle.m_radius = 2.0f;
@@ -281,60 +255,14 @@ public:
 
 		m_debugDraw.DrawString(5, m_textLine, "Press 1 to drop a ship");
 		m_textLine += 15;
-
-		if (m_bodies[0])
-		{
-			//const b2Fixture* fix = m_bodies[0]->GetFixtureList();
-			//const b2AABB aabb = fix->GetAABB();
-			//b2Vec2 v = m_bodies[0]->GetWorldCenter();
-
-			/*
-			b2Vec2 pos(m_bodies[0]->GetPosition());
-			float32 angle = m_bodies[0]->GetAngle();
-			if (pos.x > settings->viewport.x)
-			{
-				b2Vec2 newPos(-settings->viewport.x, pos.y);
-				m_bodies[0]->SetTransform(newPos, angle);
-			}
-			else if (pos.x < -settings->viewport.x)
-			{
-				b2Vec2 newPos(settings->viewport.x, pos.y);
-				m_bodies[0]->SetTransform(newPos, angle);
-			}
-			if (pos.y > settings->viewport.y)
-			{
-				b2Vec2 newPos(pos.x, -settings->viewport.y);
-				m_bodies[0]->SetTransform(newPos, angle);
-			}
-			else if (pos.y < -settings->viewport.y)
-			{
-				b2Vec2 newPos(pos.x, settings->viewport.y);
-				m_bodies[0]->SetTransform(newPos, angle);
-			}
-			*/
-		}
-		/*
-		int32 lastDecelerate = glutGet(GLUT_ELAPSED_TIME) - m_lastDecelerate;
-		int32 lastSpeedChange = glutGet(GLUT_ELAPSED_TIME) - m_lastSpeedChange;
-		if (lastSpeedChange > 1000 && lastDecelerate > 250)
-		{
-			m_thrust -= 0.25f;
-			m_thrust = b2Clamp(m_thrust, 0.0f, 100.0f);
-			b2Vec2 vec(rad2vec(m_bodies[0]->GetAngle(), m_thrust));
-			m_bodies[0]->SetLinearVelocity(vec);
-			m_lastDecelerate = glutGet(GLUT_ELAPSED_TIME);
-		}
-		*/
 	}
 
-	static Body* Create()
+	static Body* Create(Settings* settings)
 	{
-		return new Ship;
+		return new Ship(settings);
 	}
 
 	float m_thrust;
-	//int32 m_lastSpeedChange;
-	//int32 m_lastDecelerate;
 	int32 m_nextID;
 	int32 m_bodyIndex;
 	b2Body* m_bodies[k_maxBodies];

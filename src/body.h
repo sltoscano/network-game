@@ -12,16 +12,9 @@
 class Body;
 struct Settings;
 
-typedef Body* EntityCreateFcn();
+typedef Body* EntityCreateFcn(Settings*);
 
 #define	RAND_LIMIT	32767
-
-//Pixel to metres ratio. Box2D uses metres as the unit for measurement.
-//This ratio defines how many pixels correspond to 1 Box2D "metre"
-//Box2D is optimized for objects of 1x1 metre therefore it makes sense
-//to define the ratio so that your most common object type is 1x1 metre.
-#define PTM_RATIO 1
-
 
 /// Random number in range [-1,1]
 inline float32 RandomFloat()
@@ -62,8 +55,7 @@ struct Settings
 		enableContinuous(1),
 		pause(0),
 		singleStep(0),
-		windowWidth(0),
-		windowHeight(0)
+		worldExtents()
 		{}
 
 	float32 hz;
@@ -83,8 +75,7 @@ struct Settings
 	int32 enableContinuous;
 	int32 pause;
 	int32 singleStep;
-	int32 windowWidth;
-	int32 windowHeight;
+	b2Vec2 worldExtents;
 };
 
 struct Entity
@@ -121,12 +112,12 @@ struct ContactPoint
 class Body : public b2ContactListener
 {
 public:
-	Body();
+	Body(Settings* settings);
 	virtual ~Body();
 
 	void SetTextLine(int32 line) { m_textLine = line; }
 	void DrawTitle(int x, int y, const char *string);
-	virtual void Step(Settings* settings);
+	virtual void Step();
 	virtual void Keyboard(int key) { REF(key); }
 	//void ShiftMouseDown(const b2Vec2& p);
 	//virtual void MouseDown(const b2Vec2& p);
@@ -162,6 +153,7 @@ protected:
 	b2MouseJoint* m_mouseJoint;
 	b2Vec2 m_mouseWorld;
 	int32 m_stepCount;
+	Settings* m_settings;
 };
 
 #endif
