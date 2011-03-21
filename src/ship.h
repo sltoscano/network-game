@@ -9,6 +9,7 @@
 #define  GLUT_KEY_RIGHT                     0x0066
 #define  GLUT_KEY_DOWN                      0x0067
 
+
 const int32 k_maxBodies = 256;
 
 b2Color colors[] = {
