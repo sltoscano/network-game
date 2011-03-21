@@ -8,7 +8,7 @@ namespace
 {
 	int32 width = 800;
 	int32 height = 600;
-	int32 framePeriod = 16;
+	int32 framePeriod = 5;
 	float32 viewZoom = 1.0f;
 	b2Vec2 viewCenter(0.0f, 0.0f);
 	int32 mainWindow;
