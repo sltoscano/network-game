@@ -44,10 +44,7 @@ public:
 
 	void DrawFixture(b2Fixture* fixture)
 	{
-		const b2Color* pColor = (b2Color*)fixture->GetUserData();
-		const b2Color& color = (pColor == NULL) ?
-			b2Color(0.95f, 0.95f, 0.6f) :
-			*pColor;
+		const b2Color& color = b2Color(0.5f, 0.5f, 0.5f);
 
 		const b2Transform& xf = fixture->GetBody()->GetTransform();
 
@@ -245,7 +242,7 @@ public:
 
 		PolyShapesCallback callback;
 		callback.m_circle.m_radius = 2.0f;
-		callback.m_circle.m_p.Set(0.0f, 2.1f);
+		callback.m_circle.m_p.Set(m_settings->worldExtents.x / 2, m_settings->worldExtents.y / 2);
 		callback.m_transform.SetIdentity();
 		callback.m_debugDraw = &m_debugDraw;
 
@@ -253,6 +250,9 @@ public:
 		callback.m_circle.ComputeAABB(&aabb, callback.m_transform);
 
 		m_world->QueryAABB(&callback, aabb);
+
+		b2Color color(0.4f, 0.7f, 0.8f);
+		m_debugDraw.DrawCircle(callback.m_circle.m_p, callback.m_circle.m_radius, color);
 
 		m_debugDraw.DrawString(5, m_textLine, "Press 1 to drop a ship");
 		m_textLine += 15;
